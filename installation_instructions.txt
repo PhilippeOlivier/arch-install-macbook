@@ -1,0 +1,1112 @@
+		      ___________________________
+
+		       INSTALLATION_INSTRUCTIONS
+		      ___________________________
+
+
+Table of Contents
+_________________
+
+1 Pre-installation
+.. 1.1 Printing this guide from Emacs
+.. 1.2 Color profile backup
+.. 1.3 Disable system sound
+.. 1.4 Create the Arch installer USB
+2 Main installation
+.. 2.1 Boot from the Arch installer USB
+.. 2.2 Connect to the internet
+.. 2.3 Update the system clock
+.. 2.4 Partition the disks
+.. 2.5 Format the partitions
+.. 2.6 Mount the file systems
+.. 2.7 Select the mirrors
+.. 2.8 Install the base packages
+.. 2.9 Fstab
+.. 2.10 Chroot
+.. 2.11 Time zone
+.. 2.12 Locale
+.. 2.13 Hostname
+.. 2.14 Root password
+.. 2.15 Add user
+.. 2.16 Boot loader and Intel microcode
+.. 2.17 Non-AUR Drivers
+.. 2.18 Xfce desktop environment
+.. 2.19 Reboot
+.. 2.20 Ethernet
+.. 2.21 Wireless
+.. 2.22 trizen (AUR helper)
+.. 2.23 reflector (rank mirrors)
+.. 2.24 AUR drivers
+.. 2.25 Color profile
+.. 2.26 Encryption
+.. 2.27 Lockscreen
+..... 2.27.1 Xfce4 Power Manager
+..... 2.27.2 Xscreensaver
+.. 2.28 Fix the boot order to be able to boot from the USB if needed
+3 Post-installation
+.. 3.1 Printing
+.. 3.2 Firewall
+.. 3.3 Dropbox (cloud service)
+.. 3.4 Thunderbird (mail client)
+..... 3.4.1 Gmail Server Settings (IMAP)
+..... 3.4.2 Gmail Server Settings (STMP)
+..... 3.4.3 Polymtl Server Settings (IMAP)
+..... 3.4.4 Polymtl Server Settings (STMP)
+..... 3.4.5 ULaval Server Settings (IMAP)
+..... 3.4.6 ULaval Server Settings (STMP)
+.. 3.5 Firefox (browser)
+.. 3.6 Pidgin (IM client)
+..... 3.6.1 Installation
+..... 3.6.2 Adding Facebook account
+..... 3.6.3 Configuration
+..... 3.6.4 Application Autostart
+.. 3.7 Emacs (text editor)
+.. 3.8 Transmission (bittorrent client)
+..... 3.8.1 Configuration
+.. 3.9 Private Internet Access (VPN)
+.. 3.10 eduroam
+.. 3.11 Thunar (file manager)
+.. 3.12 TLP (power management)
+.. 3.13 Terminal
+.. 3.14 Okular (PDF reader and image viewer)
+.. 3.15 VirtualBox
+.. 3.16 Gecode
+.. 3.17 CPLEX
+.. 3.18 Other packages
+..... 3.18.1 Arch
+..... 3.18.2 AUR
+.. 3.19 Other settings
+..... 3.19.1 Bash
+4 Panel
+.. 4.1 Whisker Menu
+.. 4.2 Window Buttons
+.. 4.3 Separator
+.. 4.4 Keyboard Layouts
+.. 4.5 Notification Area
+.. 4.6 PulseAudio Plugin
+.. 4.7 Weather Update
+.. 4.8 Clock
+5 Settings Manager
+.. 5.1 Desktop
+.. 5.2 File Manager
+.. 5.3 Preferred Applications
+.. 5.4 Window Manager Tweaks
+.. 5.5 Workspaces
+.. 5.6 Keyboard
+.. 5.7 Mouse and Touchpad
+.. 5.8 Removable Drives and Media
+6 Notes
+.. 6.1 pacman
+.. 6.2 trizen
+7 Future improvements
+
+
+
+
+
+1 Pre-installation
+==================
+
+1.1 Printing this guide from Emacs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Generate and export the txt file with "C-c C-e t l" then print it.
+
+
+1.2 Color profile backup
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Backup the color profile from OS X:
+  /Library/ColorSync/Profiles/Displays/*
+
+
+1.3 Disable system sound
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  On OS X, mute the system sound on OS X before installing Arch Linux.
+
+
+1.4 Create the Arch installer USB
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  [https://wiki.archlinux.org/index.php/USB_flash_installation_media]
+
+
+2 Main installation
+===================
+
+2.1 Boot from the Arch installer USB
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Plug in the Arch installer USB and hold the [alt/option] key when
+  booting.
+
+
+2.2 Connect to the internet
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  An internet connection is required for installation. Make sure you are
+  connected to the internet:
+  > ping google.com
+
+
+2.3 Update the system clock
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > timedatectl set-ntp true
+
+
+2.4 Partition the disks
+~~~~~~~~~~~~~~~~~~~~~~~
+
+  > parted --align optimal /dev/sda
+  > mklabel gpt
+  > mkpart ESP fat32 1MiB 513MiB
+  > set 1 boot on
+  > mkpart primary linux-swap 513MiB 5GiB
+  > mkpart primary ext4 5GiB 30GiB
+  > mkpart primary ext4 30GiB 100%
+  > quit
+
+
+2.5 Format the partitions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > mkfs.fat -F32 /dev/sda1
+  > mkswap /dev/sda2
+  > swapon /dev/sda2
+  > mkfs.ext4 /dev/sda3
+  > mkfs.ext4 /dev/sda4
+
+
+2.6 Mount the file systems
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > mount /dev/sda3 /mnt
+  > mkdir -p /mnt/boot/efi
+  > mount /dev/sda1 /mnt/boot/efi
+  > mkdir /mnt/home
+  > mount /dev/sda4 /mnt/home
+
+
+2.7 Select the mirrors
+~~~~~~~~~~~~~~~~~~~~~~
+
+  > cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+  > rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup >
+    /etc/pacman.d/mirrorlist
+
+  NOTE: You can interrupt the last command (C-c) after a few
+  minutes. The best mirrors will already have been selected.
+
+
+2.8 Install the base packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > pacstrap /mnt base base-devel
+
+
+2.9 Fstab
+~~~~~~~~~
+
+  > genfstab -U /mnt >> /mnt/etc/fstab
+
+  NOTE: Check the resulting file in /mnt/etc/fstab and make sure it
+  covers all partitions.
+
+
+2.10 Chroot
+~~~~~~~~~~~
+
+  > arch-chroot /mnt
+
+
+2.11 Time zone
+~~~~~~~~~~~~~~
+
+  > ln -sf /usr/share/zoneinfo/Canada/Eastern /etc/localtime
+  > hwclock --systohc
+
+
+2.12 Locale
+~~~~~~~~~~~
+
+  Uncomment en_US.UTF-8 UTF-8 in /etc/locale.gen:
+  > nano /etc/locale.gen
+
+  > locale-gen
+  > echo LANG=en_US.UTF-8 > /etc/locale.conf
+
+
+2.13 Hostname
+~~~~~~~~~~~~~
+
+  > echo pholi-arch > /etc/hostname
+
+  In /etc/hosts, add (> nano /etc/hosts):
+  127.0.0.1 localhost
+  ::1 localhost
+  127.0.1.1 pholi-arch.localdomain pholi-arch
+
+
+2.14 Root password
+~~~~~~~~~~~~~~~~~~
+
+  > passwd
+
+
+2.15 Add user
+~~~~~~~~~~~~~
+
+  > useradd -m pholi
+  > passwd pholi
+
+  Add pholi to sudoers:
+  > pacman -S vim
+  > visudo
+  1. Go to the line starting with "root".
+  2. Press [Y] twice to yank it.
+  3. Go to the next line and press [P] to paste it.
+  4. Use [X] to delete "root" from that line.
+  5. Press [I] to enter insert mode, and replace the deleted "root" by
+     "pholi".
+  6. Press [Esc], then type ":wq", then press [Enter].
+
+
+2.16 Boot loader and Intel microcode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > pacman -S grub efibootmgr
+  > grub-install --target=x86_64-efi --efi-directory=/boot/efi
+    --bootloader-id=grub --recheck
+  > grub-mkconfig -o /boot/grub/grub.cfg
+
+  Add Intel microcode:
+  > pacman -S intel-ucode
+  > grub-mkconfig -o /boot/grub/grub.cfg
+
+
+2.17 Non-AUR Drivers
+~~~~~~~~~~~~~~~~~~~~
+
+  Video driver (Mac-specific):
+  > pacman -S nvidia-340xx
+
+  Wireless driver (Mac-specific):
+  > pacman -S broadcom-wl-dkms linux-headers
+
+  Touchpad driver (Mac-specific):
+  > pacman -S libinput
+
+
+2.18 Xfce desktop environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > pacman -S xorg xfce4
+
+
+2.19 Reboot
+~~~~~~~~~~~
+
+  > exit
+  > umount /dev/sda1
+  > umount /dev/sda4
+  > umount /dev/sda3
+  > swapoff /dev/sda2
+  > shutdown now
+
+  Remove the Arch installer USB and power the computer back on. After
+  entering the username and password, start Xfce:
+  > startxfce4
+
+  At the prompt when starting Xfce for the first time: choose "Use
+  default config" instead of "One empty pane".
+
+  Auto-configure Nvidia (Mac-specific):
+  > sudo nvidia-xconfig
+
+
+2.20 Ethernet
+~~~~~~~~~~~~~
+
+  At this point wired internet should not work, and a soft/hard lockup
+  bug prevents it from being permanently enabled (see:
+  [https://bbs.archlinux.org/viewtopic.php?id=233962]). It is possible
+  to activate it temporarily (for the current session), but it will
+  become disabled again after a reboot (and it possibly cannot be
+  further activated without bugging). First, find the ethernet interface
+  name (e.g., enp0s10):
+  > ip link
+
+  Then start it (this step must be done within the Xfce environment):
+  > sudo systemctl start dhcpcd@enp0s10.service
+
+  NOTE: Due to this bug, if in the future the wireless stops working and
+  packages need to be installed, boot from the Arch installer USB, mount
+  the partitions, and use arch-chroot to install the needed packages.
+
+
+2.21 Wireless
+~~~~~~~~~~~~~
+
+  Find the wireless interface name (e.g., wlp3s0):
+  > ip link
+
+  Enable the wireless interface:
+  > sudo ip link set wlp3s0 up
+
+  NetworkManager will be used to manage connections:
+  > sudo pacman -S networkmanager network-manager-applet
+  > sudo systemctl enable NetworkManager.service
+  > sudo systemctl start NetworkManager.service
+
+
+2.22 trizen (AUR helper)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > cd ~
+  > sudo pacman -S git
+  > git clone [https://aur.archlinux.org/trizen.git]
+  > cd trizen
+  > makepkg -si
+  > cd ..
+  > rm -rf trizen
+
+  NOTE: Always get the non-git version of a package if possible. While
+  non-git is not as bleeding edge as git, it is usually more stable.
+
+
+2.23 reflector (rank mirrors)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S reflector
+
+  Backup the mirror list:
+  > sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+
+  Updating the mirror list (select the 100 most recently synchronized
+  HTTP or HTTPS mirrors, sort them by download speed, and overwrite the
+  file /etc/pacman.d/mirrorlist):
+  > sudo reflector --latest 100 --protocol http --protocol https --sort
+    rate --save /etc/pacman.d/mirrorlist
+
+
+2.24 AUR drivers
+~~~~~~~~~~~~~~~~
+
+  Backlight (Mac-specific):
+  > trizen -S nvidia-bl
+
+  Keyboard backlight (Mac-specific):
+  > trizen -S acpilight
+
+  Fan control (Mac-specific):
+  > trizen -S mbpfan-git
+
+
+2.25 Color profile
+~~~~~~~~~~~~~~~~~~
+
+  Name the Apple color profile ".macbookpro55_color_profile.icc" (as a
+  hidden file) and put it in ~/.
+
+  > trizen -S xcalib
+
+  Make script .xcalibloop.sh executable (> chmod +x .xcalibloop.sh) and
+  add it to Application Autostart:
+  Name: xcalibloop
+  Command: bash /home/pholi/.xcalibloop.sh
+
+  Add command to Application Autostart:
+  - Name: Color profile
+  - Description:
+  - Command: bash -c "sleep 10; xcalib
+    ~/.macbookpro55_color_profile.icc"
+
+
+2.26 Encryption
+~~~~~~~~~~~~~~~
+
+  See:
+  [https://wiki.archlinux.org/index.php/ECryptfs#Encrypting_a_home_directory]
+  NOTE: This encryption scheme only encrypts ~/.
+
+  > sudo pacman -S ecryptfs-utils lsof rsync
+  > reboot
+
+  Log in with root and don't start Xfce. Make sure pholi is logged out
+  by checking that the following command has no output:
+  > ps -U pholi
+
+  Execute these two commands and follow the instructions:
+  > modprobe ecryptfs
+  > ecryptfs-migrate-home -u pholi
+
+  When it is done:
+  > su pholi
+  > ecryptfs-mount-private
+  > cd ~
+
+  Check that ~/.ecryptfs/auto-mount, ~/.ecryptfs/auto-umount, and
+  ~/.ecryptfs/wrapped-passphrase exist. In /etc/pam.d/system-auth do the
+  following (> sudo nano /etc/pam.d/system-auth):
+  1. AFTER the line "auth required pam_unix.so" add "auth required
+     pam_ecryptfs.so unwrap"
+  2. ABOVE the line "password required pam_unix.so" add "password
+     optional pam_ecryptfs.so"
+  3. AFTER the line "session required pam_unix.so" add "session optional
+     pam_ecryptfs.so unwrap"
+
+  If it exists, delete the file ~/pholi.r4nd0mch4r4ct3r5.
+
+  > exit
+  > reboot
+
+
+2.27 Lockscreen
+~~~~~~~~~~~~~~~
+
+  > sudo pacman -S xscreensaver
+
+  Open Screensaver from the menu to activate it. To enable lock for
+  suspend write this text in /etc/systemd/system/lock.service (> sudo
+  nano /etc/systemd/system/lock.service):
+
+  [Unit]
+  Description=Lock X session
+  Before=suspend.target
+
+  [Service]
+  Type=oneshot
+  ExecStart=/usr/bin/xflock4
+
+  [Install]
+  WantedBy=suspend.target
+
+  Then enable it:
+  > sudo systemctl enable lock
+
+  To prevent Xscreensaver from starting when there is a fullscreen
+  window, make script .xscreensaverstopper.sh executable (> chmod +x
+  .xscreensaverstopper.sh) and add it to Application Autostart:
+  Name: xscreensaverstopper
+  Command: bash /home/pholi/.xscreensaverstopper.sh
+
+  To ensure that everything works correctly, the following settings are
+  needed for Xfce4 Power Manager and Xscreensaver (display shuts down
+  and locks after 10 minutes):
+
+
+2.27.1 Xfce4 Power Manager
+--------------------------
+
+  General tab:
+  - When laptop lid is closed: SUSPEND/SUSPEND
+  - Status notifications: ON
+  - System tray icon: ON
+  System tab:
+  - Lock screen when system is going to sleep: ON
+  Display:
+  - NEVER everywhere except "switch off after 10 minutes"
+
+
+2.27.2 Xscreensaver
+-------------------
+
+  - Mode: blank screen only
+  - Blank after: 10 minutes
+  - Lock screen: ON, after 0 minutes
+  - Power management enabled: ON (10/10/10)
+  - Quick power-off in blank only mode: ON
+
+
+2.28 Fix the boot order to be able to boot from the USB if needed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  On the MacBook Pro 5,5, booting from the Arch installer USB must be
+  specified with efibootmgr. The boot order must be modified so that
+  both USB ports have precedence over the hard drive.
+
+  To create a new entry:
+  > sudo efibootmgr --create --disk /dev/sdc --part 1 --label
+    "arch_install_usb" --loader "\EFI\boot\loader.efi"
+
+  To see the current order:
+  > efibootmgr
+
+  Fix the boot order so that the USB is first:
+  > efibootmgr --bootorder arch_install_usb,arch,macosx
+  (e.g., > efibootmgr --bootorder 0001,0000,0080)
+
+
+3 Post-installation
+===================
+
+3.1 Printing
+~~~~~~~~~~~~
+
+  > trizen -S brother-hl3170cdw
+  > sudo pacman -S cups cups-pdf
+  > sudo systemctl enable org.cups.cupsd.service
+  > sudo systemctl start org.cups.cupsd.service
+  > sudo gpasswd -a pholi lp
+  > sudo gpasswd -a pholi sys
+  > sudo gpasswd -a root lp
+  > sudo gpasswd -a root sys
+
+  In browser, enter "localhost:631", then add the networked
+  printer. Configure it and make it the default printer (Administration
+  > Manage Printers > PrinterName > Set As Server Default).
+
+
+3.2 Firewall
+~~~~~~~~~~~~
+
+  > sudo pacman -S ufw gufw
+
+  Configuration: Open it and start it.
+
+
+3.3 Dropbox (cloud service)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > trizen -S dropbox
+
+  Configuration:
+  - Manually start Dropbox.
+  - Right-click the Dropbox panel icon and select Preferences, then
+    check the box "Start Dropbox on system startup".
+  - Sign in.
+
+  NOTE: This checkbox may uncheck itself, but the startup behavior
+  should not be affected.
+
+
+3.4 Thunderbird (mail client)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S thunderbird
+
+  Before setting up any mailbox:
+  - In Preferences > Security > Junk make sure "Enable adaptive junk
+    filter logging" is unchecked.
+  - In Preferences > Advanced > General make sure that "Message Store
+    Type for new accounts" is set to "File per message (maildir)".
+  - Preferences > Privacy > Tell sites that I do not want to be tracked:
+    ON
+
+  Add-ons:
+  - FireTray (minimize Thunderbird in tray)
+  - Manually sort folders (reorder mailboxes)
+
+  Start Thunderbird minimized:
+  - Add Thunderbird to Application Autostart (Name: Thunderbird;
+    Command: thunderbird)
+  - FireTray preferences > Start application hidden to tray: ON
+
+  Red color for new emails:
+  - Right-click the Thunderbird icon in the tray > Preferences > Mail:
+    Display new message count text color: RED
+  - Right-click the Thunderbird icon in the tray > Preferences > Mail:
+    Include subfolders: NO
+
+  Import RSS feeds. Settings > Check for new articles every 10 minutes.
+
+  For each account:
+  - Settings > Junk Settings: Enable adaptive junk mail controls for
+    this account: OFF
+  - Settings > Server Settings: Empty trash on exit: ON (also do this
+    for the RSS feeds)
+
+  To import Polymtl emails, suscribe to all the folders (in "Manage
+  folder subscriptions").
+
+
+3.4.1 Gmail Server Settings (IMAP)
+----------------------------------
+
+  Server Type: IMAP Mail Server
+  Server Name: imap.gmail.com
+  Port: 993
+  User Name: [email]
+  Connection security: SSL/TLS
+  Authentication method: OAuth2
+
+
+3.4.2 Gmail Server Settings (STMP)
+----------------------------------
+
+  Description: Google Mail
+  Server Name: stmp.gmail.com
+  Port: 465
+  User Name: [email]
+  Authentication method: OAuth2
+  Connection security: SSL/TLS
+
+
+3.4.3 Polymtl Server Settings (IMAP)
+------------------------------------
+
+  Server Type: IMAP Mail Server
+  Server Name: imap.polymtl.ca
+  Port: 143
+  User Name: [username]
+  Connection security: STARTTLS
+  Authentication method: Normal password
+
+
+3.4.4 Polymtl Server Settings (STMP)
+------------------------------------
+
+  Description: Polymtl
+  Server Name: stmp.polymtl.ca
+  Port: 587
+  User Name: [username]
+  Authentication method: Normal password
+  Connection security: STARTTLS
+
+
+3.4.5 ULaval Server Settings (IMAP)
+-----------------------------------
+
+  Server Type: IMAP Mail Server
+  Server Name: courriel.ulaval.ca
+  Port: 993
+  User Name: [username]
+  Connection security: SSL/TLS
+  Authentication method: Normal password
+
+
+3.4.6 ULaval Server Settings (STMP)
+-----------------------------------
+
+  Description: ULaval
+  Server Name: courriel.ulaval.ca
+  Port: 465
+  User Name: [username]
+  Authentication method: Normal password
+  Connection security: SSL/TLS
+
+
+3.5 Firefox (browser)
+~~~~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S firefox libx264 ttf-dejavu
+
+  Add-ons:
+  - uBlock Origin
+  - Reddit Enhancement Suite
+  - No Coin
+  - The Camelizer
+  - Privacy Badger
+
+  In about:preferences:
+  - General tab:
+    - Always check if Firefox is your default browser: ON
+    - When Firefox starts: Show a blank page
+    - Check your spelling as you type: OFF
+    - Downloads: Always ask you where to save files
+  - Search tab:
+    - One-Click Search Engines: Remove everything except Google
+  - Privacy & Security tab:
+    - Use Tracking Protection to block known trackers: Always
+    - Send websites a “Do Not Track” signal that you don’t want to be
+      tracked: Always
+    - Allow Firefox to send technical and interaction data to Mozilla:
+      OFF
+    - Allow Firefox to install and run studies: OFF
+    - Allow Firefox to send crash reports to Mozilla: OFF
+
+  First-party isolation:
+  1. Load the URL about:config?filter=privacy.firstparty.isolate
+  2. Double-click on privacy.firstparty.isolate to set the preference to
+     true
+
+  Disable all push notifications:
+  1. Load the URL about:config?filter=dom.webnotifications.enabled
+  2. Double-click on dom.webnotifications.enabled to set the preference
+     to false
+
+
+3.6 Pidgin (IM client)
+~~~~~~~~~~~~~~~~~~~~~~
+
+3.6.1 Installation
+------------------
+
+  > sudo pacman -S pidgin
+  > trizen -S purple-facebook
+
+
+3.6.2 Adding Facebook account
+-----------------------------
+
+  Protocol: Facebook
+  Username: philippe.olivier.42
+  Password: [password]
+  Remember password: yes
+
+
+3.6.3 Configuration
+-------------------
+
+  - Show previous conversations: Tools > Plugins > History
+  - Status: Invisible
+  - Right-click on tray icon: Blink on new message: ON
+  - Hide new IM conversations: ALWAYS
+  - Close conversations with the Escape key: ON
+  - Browser: Firefox
+  - Mute sounds: ON
+
+
+3.6.4 Application Autostart
+---------------------------
+
+  Name: Pidgin
+  Description:
+  Command: pidgin
+
+
+3.7 Emacs (text editor)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S emacs
+
+  Put the .emacs.d directory in ~/.
+
+
+3.8 Transmission (bittorrent client)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S transmission-gtk
+
+
+3.8.1 Configuration
+-------------------
+
+  - Speed: limit upload
+  - Downloading: specify directories
+
+
+3.9 Private Internet Access (VPN)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > trizen -S private-internet-access-vpn
+
+  Follow the instructions at
+  [https://wiki.archlinux.org/index.php/Private_Internet_Access/AUR] to
+  enable auto-login.
+
+
+3.10 eduroam
+~~~~~~~~~~~~
+
+  Security: WPA & WPA2 Enterprise
+  Authentification: Protected EAP (PEAP)
+  CA certificate: entrust_g2_ca.cer
+  PEAP version: Automatic
+  Inner authentication: MSCHAPv2
+  Username: [username]@polymtl.ca
+  Password: [password]
+
+
+3.11 Thunar (file manager)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Install additional packages:
+  > sudo pacman -S catfish file-roller mlocate thunar-archive-plugin
+    thunar-media-tags-plugin
+
+  View > View as Detailed List
+  Left pane: View > Shortcuts (File System, pholi, Trash)
+
+  Start Catfish and in settings select "Update Search Index" to speed up
+  searches.
+
+  To integrate Catfish in Thunar, in Thunar go to Edit > Configure
+  custom actions > Add:
+  Name: Search
+  Command: catfish --path=%f
+  Icon: All icons > edit-find
+  File pattern: *
+  Check all boxes to search for all types of files and directories
+
+
+3.12 TLP (power management)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S tlp
+  > sudo systemctl enable tlp.service
+  > sudo systemctl enable tlp-sleep.service
+  > sudo systemctl mask systemd-rfkill.service
+  > sudo systemctl mask systemd-rfkill.socket
+
+
+3.13 Terminal
+~~~~~~~~~~~~~
+
+  Right-click the background and uncheck "Show Menubar".
+
+
+3.14 Okular (PDF reader and image viewer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S okular
+
+  Settings > Show toolbar: OFF
+  Settings > Configure Okular: Obey DRM limitations: OFF
+  Settings > Configure Okular: Open new files in tabs: ON
+
+  Right-click in the leftmost pane: Small icons: ON
+
+
+3.15 VirtualBox
+~~~~~~~~~~~~~~~
+
+  > sudo pacman -S virtualbox virtualbox-guest-iso
+    virtualbox-host-modules-arch
+
+  File > Preferences > Default Machine Folder: "~/.VirtualBox_VMs"
+
+
+3.16 Gecode
+~~~~~~~~~~~
+
+  Reference (includes makefile example):
+  [http://www.imada.sdu.dk/~marco/Misc/Gecode/gecode.html#orgheadline1]
+
+  Installing:
+  > cd /opt
+  > sudo git clone [https://github.com/Gecode/gecode.git]
+  > cd gecode
+  > sudo ./configure --prefix=${PWD}
+  > sudo make
+
+  Add the following line to ~/.bashrc:
+  export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/gecode
+
+  Updating:
+  > cd /opt/gecode
+  > sudo git pull
+  > sudo make
+
+
+3.17 CPLEX
+~~~~~~~~~~
+
+  Install Cplex manually in /opt.
+
+
+3.18 Other packages
+~~~~~~~~~~~~~~~~~~~
+
+3.18.1 Arch
+-----------
+
+  dosfstools (format in FAT)
+  gimp (graphics editor)
+  gparted (GUI for formatting)
+  gvfs (trash can)
+  htop (process viewer)
+  inkscape (SVG editor)
+  leafpad (lightweight text editor)
+  libreoffice-fresh (office suite)
+  lm_sensors xsensors (hardware monitoring)
+  openssh sshpass (secure shell)
+  python-unidecode python-matplotlib python-numpy python-scipy (Python3
+  libraries)
+  qpdf (PDF manipulation)
+  texlive-core texlive-bin texlive-most (LaTeX)
+  unrar unzip (archiving tools)
+  valgrind kcachegrind (debugging and profiling)
+  veracrypt (encryption)
+  vlc phonon-qt5-vlc (media player)
+  wget (network utility)
+  xclip (CLI to clipboard)
+  xfce4-screenshooter (take screenshots)
+  xfce4-taskmanager (task manager)
+
+
+3.18.2 AUR
+----------
+
+  jabref (BibTeX GUI)
+  latex-template-springer (Springer LaTeX templates)
+  minizinc-ide (MiniZinc)
+  neofetch (CLI system information tool)
+
+
+3.19 Other settings
+~~~~~~~~~~~~~~~~~~~
+
+3.19.1 Bash
+-----------
+
+  To open any file from the terminal, the following command can be used:
+  > xdg-open some_file.pdf
+
+  To create a simple alias, add the following line to ~/.bashrc:
+  alias open='xdg-open &>/dev/null'
+
+
+4 Panel
+=======
+
+  NOTE: Each subsection represents, in order, the items of the panel.
+
+
+4.1 Whisker Menu
+~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S xfce4-whiskermenu-plugin
+
+  Super L (Apple key) shortcut: Keyboard > Application Shortcuts,
+  /usr/bin/xfce4-popup-whiskermenu
+
+  Configuration:
+  - Category icon size: None
+  - Recently used, amount of items: 0
+  - Manually remove all from favorites
+
+
+4.2 Window Buttons
+~~~~~~~~~~~~~~~~~~
+
+  Switch windows using the mouse wheel: OFF
+
+
+4.3 Separator
+~~~~~~~~~~~~~
+
+
+4.4 Keyboard Layouts
+~~~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S xfce4-xkb-plugin
+
+  Show layout as: system
+  Layout name: language
+  Manage layout globally
+
+
+4.5 Notification Area
+~~~~~~~~~~~~~~~~~~~~~
+
+  Show frame: OFF
+
+
+4.6 PulseAudio Plugin
+~~~~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S xfce4-pulseaudio-plugin pavucontrol pulseaudio
+    pulseaudio-alsa xfce4-notifyd
+
+
+4.7 Weather Update
+~~~~~~~~~~~~~~~~~~
+
+  > sudo pacman -S xfce4-weather-plugin
+
+  Tooltip style: verbose
+  Scrollbox: keep only temperature
+
+
+4.8 Clock
+~~~~~~~~~
+
+  Format: Custom format: %a %d %b %H:%M
+
+
+5 Settings Manager
+==================
+
+5.1 Desktop
+~~~~~~~~~~~
+
+  Solid color (RGB: 58/110/165)
+  Style: None
+  Include application menu on desktop right click: OFF
+  Default icons: Unselect all
+
+
+5.2 File Manager
+~~~~~~~~~~~~~~~~
+
+  Format: Today at...
+
+
+5.3 Preferred Applications
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  - Firefox
+  - Thunderbird
+  - Thunar
+  - Xfce Terminal
+
+
+5.4 Window Manager Tweaks
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Cycle through windows in a list: ON (smaller alt-tab icons)
+  Raise windows when any mouse button is pressed: OFF (allows scrolling
+  on background windows)
+
+
+5.5 Workspaces
+~~~~~~~~~~~~~~
+
+  Number of workspaces: 1
+
+
+5.6 Keyboard
+~~~~~~~~~~~~
+
+  Layout: Use system default: OFF
+  Keyboard layout: Add French (Canada) Canadian Multilingual
+  Change layout option: Ctrl+Shift
+
+
+5.7 Mouse and Touchpad
+~~~~~~~~~~~~~~~~~~~~~~
+
+  Tap touchpad to click: ON
+
+
+5.8 Removable Drives and Media
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Mount removable drives when hot-plugged: ON
+
+
+6 Notes
+=======
+
+6.1 pacman
+~~~~~~~~~~
+
+  Updating packages:
+  > sudo pacman -Syu
+
+  Removing and purging packages:
+  > sudo pacman -Rns
+
+  Displaying a list of unused packages (orphans):
+  > pacman -Qtdq
+
+  Removing unused packages (orphans):
+  > sudo pacman -Rns $(pacman -Qtdq)
+
+
+6.2 trizen
+~~~~~~~~~~
+
+  Updating packages:
+  > trizen -Syu
+
+
+7 Future improvements
+=====================
+
+  - Change encryption to LUKS, which is highly recommended by everyone
+  - If switching to a Thinkpad, take a look at the Thinkpad-specific
+    Arch/AUR packages, especially in power management
