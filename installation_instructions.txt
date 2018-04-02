@@ -52,8 +52,6 @@ _________________
 ..... 3.4.2 Gmail Server Settings (STMP)
 ..... 3.4.3 Polymtl Server Settings (IMAP)
 ..... 3.4.4 Polymtl Server Settings (STMP)
-..... 3.4.5 ULaval Server Settings (IMAP)
-..... 3.4.6 ULaval Server Settings (STMP)
 .. 3.5 Firefox (browser)
 .. 3.6 Pidgin (IM client)
 ..... 3.6.1 Installation
@@ -98,7 +96,6 @@ _________________
 6 Notes
 .. 6.1 pacman
 .. 6.2 trizen
-7 Future improvements
 
 
 
@@ -666,28 +663,6 @@ _________________
   Connection security: STARTTLS
 
 
-3.4.5 ULaval Server Settings (IMAP)
------------------------------------
-
-  Server Type: IMAP Mail Server
-  Server Name: courriel.ulaval.ca
-  Port: 993
-  User Name: [username]
-  Connection security: SSL/TLS
-  Authentication method: Normal password
-
-
-3.4.6 ULaval Server Settings (STMP)
------------------------------------
-
-  Description: ULaval
-  Server Name: courriel.ulaval.ca
-  Port: 465
-  User Name: [username]
-  Authentication method: Normal password
-  Connection security: SSL/TLS
-
-
 3.5 Firefox (browser)
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -1102,11 +1077,3 @@ _________________
 
   Updating packages:
   > trizen -Syu
-
-
-7 Future improvements
-=====================
-
-  - Change encryption to LUKS, which is highly recommended by everyone
-  - If switching to a Thinkpad, take a look at the Thinkpad-specific
-    Arch/AUR packages, especially in power management

@@ -377,22 +377,6 @@ User Name: [username]
 Authentication method: Normal password
 Connection security: STARTTLS
 
-*** ULaval Server Settings (IMAP)
-Server Type: IMAP Mail Server
-Server Name: courriel.ulaval.ca
-Port: 993
-User Name: [username]
-Connection security: SSL/TLS
-Authentication method: Normal password
-
-*** ULaval Server Settings (STMP)
-Description: ULaval
-Server Name: courriel.ulaval.ca
-Port: 465
-User Name: [username]
-Authentication method: Normal password
-Connection security: SSL/TLS
-
 ** Firefox (browser)
 > sudo pacman -S firefox libx264 ttf-dejavu
 
@@ -668,6 +652,4 @@ Removing unused packages (orphans):
 Updating packages:
 > trizen -Syu
   
-* Future improvements
-- Change encryption to LUKS, which is highly recommended by everyone
-- If switching to a Thinkpad, take a look at the Thinkpad-specific Arch/AUR packages, especially in power management
+
